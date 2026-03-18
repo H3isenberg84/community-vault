@@ -29,7 +29,7 @@ Eigenständige Projekte leben in eigenen Repos. Hier die Übersicht:
 
 | Projekt | Beschreibung | Autor |
 |---------|-------------|-------|
-| [CC_GodMode](https://github.com/anthropics/cc-godmode) | Agentic Workflow Layer für Claude Code | @DennisWestermann |
+| [CC_GodMode]([https://github.com/anthropics/cc-godmode](https://github.com/cubetribe/ClaudeCode_GodMode-On)) | Agentic Workflow Layer für Claude Code | @cubetribe |
 | *Dein Projekt hier?* | → Pull Request! | @du |
 
 > 💡 Du hast ein eigenes Tool gebaut? Trag es per PR in die Tabelle ein — oder frag im Forum, ob wir es in die Org aufnehmen.
@@ -84,9 +84,9 @@ Alles in diesem Repo steht unter der [MIT License](LICENSE), sofern in der jewei
 
 ## 🏠 Links
 
-- 🌐 [VibecodingGermany Forum](https://forum.vibecoding-germany.de)
-- 📱 WhatsApp Community — Link im Forum
-- 🎙️ Mango Blau AI Podcast
+- 🌐 [VibecodingGermany Forum](https://vibecoding-germany.de)
+- 📱 [WhatsApp Community](https://chat.whatsapp.com/JxgFK9Pu4DqHlYL0af1gnu?mode=gi_t)
+- 🎙️ [MANGOBLAU/AI der KI Podcast](https://mangoblauai.dennis-westermann.de/links)
 - 🐙 [VibecodingGermany auf GitHub](https://github.com/VibecodingGermany)
 
 ---
