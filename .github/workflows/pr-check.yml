@@ -1,0 +1,84 @@
+name: "✅ PR Check"
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  structure-check:
+    name: "Struktur & Header Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check file locations
+        run: |
+          echo "## 📁 Strukturprüfung" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          ALLOWED_DIRS="snippets prompts configs scripts templates guides"
+          HAS_WARNINGS=false
+
+          # Alle geänderten Dateien im PR holen
+          CHANGED_FILES=$(git diff --name-only --diff-filter=A origin/main...HEAD 2>/dev/null || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "✅ Keine neuen Dateien gefunden." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          for FILE in $CHANGED_FILES; do
+            # Ignoriere .github, README, LICENSE und Root-Dateien
+            if echo "$FILE" | grep -qE '^\.github/|^README\.md$|^LICENSE$'; then
+              continue
+            fi
+
+            # Prüfe ob Datei in einem erlaubten Ordner liegt
+            DIR=$(echo "$FILE" | cut -d'/' -f1)
+            if ! echo "$ALLOWED_DIRS" | grep -qw "$DIR"; then
+              echo "⚠️ **$FILE** liegt nicht in einem der vorgesehenen Ordner ($ALLOWED_DIRS)" >> $GITHUB_STEP_SUMMARY
+              HAS_WARNINGS=true
+            fi
+
+            # Prüfe auf Header-Kommentar (nur für Code-Dateien, nicht README.md)
+            if echo "$FILE" | grep -qE '\.(py|js|ts|sh|bash|zsh)$'; then
+              if ! head -5 "$FILE" | grep -qi 'name\|beschreibung\|description\|autor\|author'; then
+                echo "⚠️ **$FILE** hat keinen Kommentar-Header (Name, Beschreibung, Autor)" >> $GITHUB_STEP_SUMMARY
+                HAS_WARNINGS=true
+              fi
+            fi
+          done
+
+          if [ "$HAS_WARNINGS" = false ]; then
+            echo "✅ Alles sauber! Dateien liegen in den richtigen Ordnern und haben Header." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> 💡 Das sind nur Hinweise, keine Blocker. Maintainer entscheiden beim Review." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  file-size-check:
+    name: "Dateigrößen Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for large files
+        run: |
+          echo "## 📦 Dateigrößen" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          LARGE_FILES=$(find . -not -path './.git/*' -type f -size +500k 2>/dev/null)
+
+          if [ -z "$LARGE_FILES" ]; then
+            echo "✅ Keine ungewöhnlich großen Dateien." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Große Dateien gefunden (>500KB):**" >> $GITHUB_STEP_SUMMARY
+            echo "$LARGE_FILES" | while read f; do
+              SIZE=$(du -h "$f" | cut -f1)
+              echo "- \`$f\` ($SIZE)" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> Bitte prüfen, ob diese Dateien wirklich ins Repo gehören." >> $GITHUB_STEP_SUMMARY
+          fi
